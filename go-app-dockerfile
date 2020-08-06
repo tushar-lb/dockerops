@@ -1,0 +1,19 @@
+FROM registry.access.redhat.com/ubi8/ubi:latest
+
+RUN yum update -y
+RUN mkdir /test
+WORKDIR /
+
+RUN yum -y install gzip git tar wget
+RUN yum install ca-certificates wget unzip -y && yum upgrade -y
+
+# Install aws cli
+RUN wget -q "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -O "awscliv2.zip" && unzip -q awscliv2.zip && ./aws/install
+# Install aws-iam-authenticator
+RUN wget -O /usr/local/bin/aws-iam-authenticator https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v0.4.0/aws-iam-authenticator_0.4.0_linux_amd64
+RUN chmod +x /usr/local/bin/aws-iam-authenticator
+
+COPY bin/test /
+COPY bin/linux/test /pxcentralctl/linux/
+COPY bin/darwin/test /pxcentralctl/darwin/
+COPY bin/windows/test.exe /pxcentralctl/windows/
